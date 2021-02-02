@@ -43,7 +43,7 @@ def get_city(df, city_name=None, city_index=None):
     if city_name is not None:
         return df.loc[df['city_ascii'].str.lower() == city_name.lower()].to_dict('records')[0]
     if city_index is not None:
-        return df.iloc[[2]].to_dict('records')[0]
+        return df.iloc[[city_index]].to_dict('records')[0]
 
 
 
