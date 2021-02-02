@@ -47,26 +47,28 @@ def get_next_page(response):
         link = next_page['url']
         return link
     return None
-
+  
 
 def get_all_pages(url, max_pages=None, pbar=False):
     resp = requests.get(url)
     initial_resp = json.loads(resp.content)
+    has_features = initial_resp.get('features') is not None
     pbar = tqdm(total=max_pages, desc=f'retrieving requests for {url}', disable=not pbar)
     page_count = 0
-    while True:
-        url = get_next_page(resp)
-        if url is None:
-            break
-        else:
-            resp = requests.get(url)
-            content = json.loads(resp.content)
-            initial_resp['features'].extend(content['features'])
-        pbar.update(1)
-        page_count += 1
-        if max_pages is not None and page_count >= max_pages:
-            break
-    initial_resp['n_features'] = len(initial_resp['features'])
+    if has_features:
+        while True:
+            url = get_next_page(resp)
+            if url is None:
+                break
+            else:
+                resp = requests.get(url)
+                content = json.loads(resp.content)
+                initial_resp['features'].extend(content['features'])
+            pbar.update(1)
+            page_count += 1
+            if max_pages is not None and page_count >= max_pages:
+                break
+        initial_resp['n_features'] = len(initial_resp['features'])
     return initial_resp
 
 
@@ -97,9 +99,9 @@ def random_images(close_to=None, radius=100000):
 
 
 def mp_wrapper(idx):
-    resp = city_images(radius=5000, city_index=idx)
-    if resp['n_features'] > 0:
-        with open(f"{args.out_folder}/{idx}.json", 'w') as f:
+    resp = city_images(radius=20000, city_index=idx)
+    if resp.get('features') is not None and resp['n_features'] > 0:
+        with open(f"/mnt/data/mapillary_results/{idx}.json", 'w') as f:
             json.dump(resp, f, indent=4)
 
 
