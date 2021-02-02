@@ -99,10 +99,12 @@ def random_images(close_to=None, radius=100000):
 
 
 def mp_wrapper(idx):
-    resp = city_images(radius=20000, city_index=idx)
-    if resp.get('features') is not None and resp['n_features'] > 0:
-        with open(f"/mnt/data/mapillary_results/{idx}.json", 'w') as f:
-            json.dump(resp, f, indent=4)
+    try:
+      resp = city_images(radius=20000, city_index=idx)
+      if resp.get('features') is not None and resp['n_features'] > 0:
+          with open(f"/mnt/data/mapillary_results/{idx}.json", 'w') as f:
+              json.dump(resp, f, indent=4)
+    except: pass
 
 
 if __name__ == "__main__":
