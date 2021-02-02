@@ -9,8 +9,9 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description='script for scraping images from mapillary')
-parser.add_argument('client_id', metavar='N', type=int, nargs='+',
-                    help='an integer for the accumulator')
+parser.add_argument('client_id', type=str,
+                    help='mapillary client id')
+parser.add_argument('--out_folder', help='where to save results', default='results')
 args = parser.parse_args()
 
 CLIENT_ID = args.client_id  # create your client ID at https://mapillary.com/developer
@@ -98,12 +99,12 @@ def random_images(close_to=None, radius=100000):
 def mp_wrapper(idx):
     resp = city_images(radius=5000, city_index=idx)
     if resp['n_features'] > 0:
-        with open(f"results/{idx}.json", 'w') as f:
+        with open(f"{args.out_folder}/{idx}.json", 'w') as f:
             json.dump(resp, f, indent=4)
 
 
 if __name__ == "__main__":
-    os.makedirs('results', exist_ok=True)
+    os.makedirs(args.out_folder, exist_ok=True)
     n = len(CITIES_DATA)
     with Pool(processes=cpu_count()*4) as p:
         with tqdm(total=n) as pbar:
